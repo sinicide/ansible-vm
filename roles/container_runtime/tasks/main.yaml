@@ -1,0 +1,4 @@
+---
+- name: Docker Installation
+  include_tasks: docker.yaml
+  when: container_runtime == "docker"

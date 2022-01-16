@@ -1,0 +1,29 @@
+---
+all:
+  vars:
+    ansible_connection: ssh
+    ansible_user: <username>
+    ansible_become: true
+    # uncomment if not installing on a VM.
+    # vm_install: false
+
+    # custom certs
+    custom_ssl_ca: /tmp/ca.crt
+    custom_ssl_cert: /tmp/ssl.crt
+    custom_ssl_key: /tmp/ssl.key
+    custom_ssl_fullchain_cert: /tmp/fullchain.crt
+
+    # Portainer Configuration
+    # Uncomment to override portainer hostname, otherwise it's portainer-hostname.fqdn
+    # portainer_hostname: ""
+    # Uncomment to override default admin username and password
+    # portainer_admin_username: "admin"
+    # portainer_admin_password: "pleasechangeme"
+
+    # Metrics
+    # Uncomment to change metrics collector from default, prometheus
+    # metrics_collector: "prometheus"
+
+vm:
+  hosts:
+    <hostname_fqdn>:

@@ -1,0 +1,56 @@
+---
+- name: Create directory {{ portainer_directory }}
+  file:
+    path: "{{ portainer_directory }}/data"
+    owner: root
+    state: directory
+
+- name: Checking if {{ portainer_name }} is running
+  shell:
+    cmd: "docker compose ls"
+  become: true
+  register: portainer_status
+  changed_when: false
+
+- name: Stopping {{ portainer_name }}
+  become: true
+  shell:
+    cmd: "docker compose -f {{ portainer_compose_path }} down"
+  changed_when: false
+  when:
+    - '"portainer" in portainer_status.stdout'
+
+- name: Copy portainer-compose file
+  template:
+    src: "../templates/portainer/portainer-compose.yaml.j2"
+    dest: "{{ portainer_compose_path }}"
+    owner: root
+    mode: '0644'
+
+- name: Starting {{ portainer_name }}
+  shell:
+    cmd: "docker compose -f {{ portainer_compose_path }} up -d"
+  become: true
+  changed_when: false
+
+- name: Waiting until Portainer started
+  wait_for: 
+    timeout: 10
+
+- name: Check Admin User exists
+  uri:
+    method: GET
+    url: "{{ portainer_url_admin_check }}"
+    status_code: [ 204,404 ]
+    validate_certs: no
+  register: admin_user_check
+
+- name: Create Admin User for Initial Install
+  uri:
+    method: POST
+    url: "{{ portainer_url_admin_create }}"
+    body: "{ \"username\": \"{{ portainer_admin_username }}\", \"password\": \"{{ portainer_admin_password }}\" }"
+    body_format: json
+    status_code: 200
+    validate_certs: no
+  when: admin_user_check.status == 404

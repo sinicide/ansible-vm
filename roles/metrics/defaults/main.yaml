@@ -1,0 +1,6 @@
+metrics_collector: prometheus
+prometheus_username: "node_exporter"
+node_exporter_version: "1.3.1"
+node_exporter_arch: "{{ 'amd64' if ansible_facts.architecture == 'x86_64' else 'armv7' if 'armv7l' else '386' }}"
+node_exporter_filename: "node_exporter-{{ node_exporter_version }}.{{ ansible_facts.system | lower }}-{{ node_exporter_arch }}"
+node_exporter_url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/{{ node_exporter_filename }}"

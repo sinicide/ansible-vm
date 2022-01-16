@@ -1,0 +1,28 @@
+version: '3'
+services:
+  traefik:
+    image: traefik:{{ traefik_version }}
+    container_name: {{ traefik_name }}
+    ports:
+      - {{ traefik_port_http }}:{{ traefik_port_http }}
+      - {{ traefik_port_https }}:{{ traefik_port_https }}
+      - {{ traefik_port_metrics }}:{{ traefik_port_metrics }}
+    restart: unless-stopped
+    networks:
+      - {{ traefik_network_name }}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - {{ traefik_directory }}/data/traefik.yaml:{{ traefik_config_path }}:ro
+      - {{ traefik_directory }}/data/conf:/etc/traefik/conf
+      - {{ container_ssl_directory }}:/etc/secrets
+    labels:
+      - "traefik.http.routers.traefik-http.entrypoints={{ traefik_http_name }}"
+      - "traefik.http.routers.traefik-http.rule=Host(`{{ ansible_facts.fqdn }}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`) || PathPrefix(`/metrics`))"
+      - "traefik.http.routers.traefik-http.middlewares=redirect-to-https@file"
+      - "traefik.http.routers.traefik-https.rule=Host(`{{ ansible_facts.fqdn }}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      - "traefik.http.routers.traefik-https.entrypoints={{ traefik_https_name }}"
+      - "traefik.http.routers.traefik-https.service=api@internal"
+
+networks:
+  {{ traefik_network_name }}:
+    external: true

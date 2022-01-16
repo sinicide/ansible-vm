@@ -1,0 +1,21 @@
+container_runtime: docker
+
+docker_gpg_key: "https://download.docker.com/linux/ubuntu/gpg"
+docker_supported_arch:
+  - x86_64
+  - amd64
+  - armhf
+  - arm64
+  - s390x
+
+docker_repo: "https://download.docker.com/linux"
+
+docker_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+
+docker_plugins_directory: "/usr/local/lib/docker/cli-plugins"
+# latest as of 2021-01-06
+docker_compose_version: "2.2.3"
+docker_compose_download: "https://github.com/docker/compose/releases/download/v{{ docker_compose_version }}/docker-compose-linux-{{ ansible_facts.architecture }}"

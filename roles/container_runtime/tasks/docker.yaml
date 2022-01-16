@@ -1,0 +1,69 @@
+---
+- name: Get DEB Architecture
+  shell: dpkg --print-architecture
+  register: deb_architecture
+  changed_when: false
+
+- name: System has Supported Architecture for Docker
+  assert:
+    that: deb_architecture.stdout in item
+    fail_msg: "System Architecture doesn't support Docker, System Arch: {{ ansible_facts.architecture }}"
+  with_items: 
+    - "{{ docker_supported_arch | string }}"
+
+- name: Add Docker apt key
+  apt_key:
+    url: "{{ docker_gpg_key }}"
+    state: present
+  when:
+    - ansible_facts.os_family == "Debian"
+
+- name: Add repository
+  apt_repository:
+    repo: "deb [arch={{ deb_architecture.stdout }}] {{ docker_repo }}/{{ ansible_facts.distribution | lower }} {{ ansible_facts.distribution_release }} stable"
+    state: present
+  when:
+    - ansible_facts.os_family == "Debian"
+
+# TODO: add logic for specifying package version
+- name: Install Docker Engine
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - "{{ docker_packages }}"
+  when:
+    - ansible_facts.os_family == "Debian"
+
+- name: Docker Started
+  systemd:
+    name: docker
+    state: started
+    enabled: true
+    
+- name: Create cli-plugins directory
+  file:
+    path: "{{ docker_plugins_directory }}"
+    state: directory
+    owner: root
+
+- name: Download docker compose (v2) binary
+  get_url:
+    url: "{{ docker_compose_download }}"
+    dest: "{{ docker_plugins_directory }}/docker-compose"
+    mode: 0755
+    checksum: sha256:https://github.com/docker/compose/releases/download/v{{ docker_compose_version }}/docker-compose-linux-{{ ansible_facts.architecture }}.sha256
+
+- name: Install python3
+  apt:
+    state: present
+    update_cache: yes
+    name:
+      - python3
+      - python3-pip
+
+- name: Pip Install docker module
+  pip:
+    name: docker
+    state: present

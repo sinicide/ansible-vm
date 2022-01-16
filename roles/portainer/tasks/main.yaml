@@ -1,0 +1,33 @@
+---
+- name: Create containers SSL directory
+  file:
+    path: "{{ container_ssl_directory }}"
+    owner: root
+    state: directory
+
+- name: Copy SSL CA Cert
+  copy:
+    src: "{{ custom_ssl_ca }}"
+    dest: "{{ container_ssl_directory }}/ca.crt"
+    owner: root
+    mode: '0644'
+
+- name: Copy SSL Cert
+  copy:
+    src: "{{ custom_ssl_cert }}"
+    dest: "{{ container_ssl_directory }}/tls.crt"
+    owner: root
+    mode: '0644'
+
+- name: Copy SSL Key
+  copy:
+    src: "{{ custom_ssl_key }}"
+    dest: "{{ container_ssl_directory }}/tls.key"
+    owner: root
+    mode: '0640'
+
+# importing traefik task
+- import_tasks: traefik.yaml
+
+# importing portainer task
+- import_tasks: portainer.yaml

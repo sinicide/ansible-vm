@@ -1,0 +1,32 @@
+---
+# Install Packages
+- name: Install Common Packages
+  apt:
+    state: present
+    update_cache: yes
+    name: "{{ item }}"
+  loop: "{{ common_packages }}"
+
+- name: Install VM Packages
+  apt:
+    state: present
+    update_cache: yes
+    name: "{{ item }}"
+  loop: "{{ common_vm_packages }}"
+  when: vm_install
+
+- name: Install Debian Packages
+  apt:
+    state: present
+    update_cache: yes
+    name: "{{ item }}"
+  loop: "{{ debian_packages }}"
+  when: ansible_facts.os_family == "debian"
+
+# Set Timezone
+- name: Set Timezone
+  timezone:
+    name: "{{ os_timezone }}"
+
+# install self signed root CAs
+- import_tasks: ssl.yaml

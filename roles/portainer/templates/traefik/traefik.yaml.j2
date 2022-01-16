@@ -1,0 +1,43 @@
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: true
+
+entryPoints:
+  web:
+    address: :{{ traefik_port_http }}
+
+  websecure:
+    address: :{{ traefik_port_https }}
+    http:
+      tls:
+        options: default
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+
+  file:
+    directory: "/etc/traefik/conf"
+    watch: true
+
+log:
+  level: ERROR
+  format: common
+
+accessLog:
+  format: common
+
+api:
+  dashboard: true
+
+ping:
+  entryPoint: web
+
+serversTransport:
+  insecureSkipVerify: true
+  rootCAs:
+    - /etc/secrets/ca.crt
+
+metrics:
+  prometheus:
+    entryPoint: websecure

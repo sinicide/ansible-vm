@@ -1,0 +1,28 @@
+---    
+- name: Perform Initialization
+  tags: common
+  hosts: vm
+  tasks:
+    - import_role:
+        name: common
+
+- name: Install Metrics Collector
+  tags: metrics
+  hosts: vm
+  tasks:
+    - import_role:
+        name: metrics
+
+- name: Install Container Runtime
+  tags: cr
+  hosts: vm
+  tasks:
+    - import_role:
+        name: container_runtime
+
+- name: Install Portainer
+  tags: portainer
+  hosts: vm
+  tasks:
+    - import_role:
+        name: portainer

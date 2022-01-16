@@ -1,0 +1,48 @@
+---
+- name: Create Prometheus Group
+  group:
+    name: "{{ prometheus_username }}"
+    state: present
+    system: yes
+
+- name: Create Prometheus User
+  user:
+    name: "{{ prometheus_username }}"
+    group: "{{ prometheus_username }}"
+    shell: "/sbin/nologin"
+    create_home: no
+    system: true
+
+- name: Download node_exporter
+  get_url:
+    url: "{{ node_exporter_url }}.tar.gz"
+    dest: "/tmp/{{ node_exporter_filename }}"
+    mode: '0755'
+
+- name: Unzip node_exporter
+  unarchive:
+    src: "/tmp/{{ node_exporter_filename }}.tar.gz"
+    dest: "/tmp"
+    remote_src: yes
+
+- name: Install node_exporter
+  copy:
+    src: "/tmp/{{ node_exporter_filename }}/node_exporter"
+    dest: "/usr/local/bin/node_exporter"
+    owner: root
+    group: root
+    mode: '0755'
+    remote_src: yes
+
+- name: Copy Service File
+  template:
+    src: "../templates/node_exporter.service.j2"
+    dest: "/etc/systemd/system/node_exporter.service"
+    owner: "root"
+    group: "root"
+    
+- name: Enabling Service File
+  systemd:
+    name: node_exporter
+    daemon_reload: yes
+    state: started

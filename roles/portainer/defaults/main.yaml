@@ -1,0 +1,32 @@
+container_directory: "/opt/containers"
+container_ssl_directory: "{{ container_directory }}/ssl"
+
+traefik_name: "traefik"
+traefik_version: "latest"
+traefik_directory: "{{ container_directory }}/{{ traefik_name }}"
+traefik_compose_path: "{{ traefik_directory }}/traefik-compose.yaml"
+traefik_http_name: "web"
+traefik_port_http: "80"
+traefik_https_name: "websecure"
+traefik_port_https: "443"
+traefik_port_metrics: "8082"
+traefik_config_path: "/etc/traefik/traefik.yaml"
+traefik_network_name: "{{ traefik_name }}_proxy"
+
+portainer_name: "portainer"
+portainer_fqdn: "{{ portainer_name }}-{{ ansible_facts.fqdn }}"
+portainer_version: "latest"
+portainer_port_ui: "9000"
+portainer_directory: "{{ container_directory }}/{{ portainer_name }}"
+portainer_compose_path: "{{ portainer_directory }}/portainer-compose.yaml"
+portainer_url_admin_check: "https://{{ portainer_fqdn }}/api/users/admin/check"
+portainer_url_admin_create: "https://{{ portainer_fqdn }}/api/users/admin/init"
+
+# supported
+portainer_arch:
+  - "arm64"
+  - "x86_64"
+
+# defaults, these should be overriden in your inventory file
+portainer_admin_username: "admin"
+portainer_admin_password:  "pleasechangeme"

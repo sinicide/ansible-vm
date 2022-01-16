@@ -1,0 +1,17 @@
+tls:
+  certificates:
+    - certFile: /etc/secrets/tls.crt
+      keyFile: /etc/secrets/tls.key
+
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/secrets/tls.crt
+        keyFile: /etc/secrets/tls.key
+
+http:
+  middlewares:
+    redirect-to-https:
+      redirectScheme:
+        scheme: "https"
+        permanent: true

@@ -1,0 +1,53 @@
+---
+- name: Create directory {{ traefik_directory }}
+  file:
+    path: "{{ traefik_directory }}/data/conf"
+    owner: root
+    state: directory
+
+- name: Create {{ traefik_network_name }} network
+  community.docker.docker_network:
+    name: "{{ traefik_network_name }}"
+    driver: "bridge"
+
+- name: Checking if {{ traefik_name }} is running
+  shell:
+    cmd: "docker compose ls"
+  become: true
+  register: traefik_status
+  changed_when: false
+
+- name: Stopping {{ traefik_name }}
+  become: true
+  shell:
+    cmd: "docker compose -f {{ traefik_compose_path }} down"
+  changed_when: false
+  when:
+    - '"traefik" in traefik_status.stdout'
+
+- name: Copy traefik.yaml config
+  template:
+    src: "../templates/traefik/traefik.yaml.j2"
+    dest: "{{ traefik_directory }}/data/traefik.yaml"
+    owner: root
+    mode: '0644'
+
+- name: Copy dynamic_config.yaml config
+  template:
+    src: "../templates/traefik/conf/dynamic_configs.yaml.j2"
+    dest: "{{ traefik_directory }}/data/conf/dynamic_configs.yaml"
+    owner: root
+    mode: '0644'
+
+- name: Copy traefik-compose.yaml file
+  template:
+    src: "../templates/traefik/traefik-compose.yaml.j2"
+    dest: "{{ traefik_compose_path }}"
+    owner: root
+    mode: '0644'
+
+- name: Starting {{ traefik_name }}
+  shell:
+    cmd: "docker compose -f {{ traefik_compose_path }} up -d"
+  become: true
+  changed_when: false

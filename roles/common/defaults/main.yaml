@@ -1,0 +1,20 @@
+vm_install: true
+
+common_packages:
+  - ca-certificates
+  - gnupg
+  - vim
+  - git
+  - curl
+  - netcat
+  - dnsutils
+
+common_vm_packages:
+  - qemu-guest-agent
+  - haveged
+
+debian_packages:
+  - lsb-release
+  - nfs-common
+
+os_timezone: "America/Chicago"

@@ -1,0 +1,16 @@
+---
+- name: Copying Self Signed Root CA Cert
+  copy:
+    src: "{{ custom_ssl_ca }}"
+    dest: "/usr/local/share/ca-certificates/self-signed-ca.crt"
+    mode: '0644'
+  become: yes
+  when:
+    - ansible_facts.os_family == "Debian"
+
+- name: Applying update
+  shell:
+    cmd: "update-ca-certificates"
+  become: yes
+  when:
+    - ansible_facts.os_family == "Debian"

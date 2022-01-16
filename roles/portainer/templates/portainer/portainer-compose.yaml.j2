@@ -1,0 +1,23 @@
+version: '3'
+services:
+  portainer:
+    image: portainer/portainer-ce:{{ portainer_version }}
+    container_name: {{ portainer_name }}
+    restart: unless-stopped
+    networks:
+      - {{ traefik_network_name }}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - {{ portainer_directory }}/data:/data
+      - {{ container_ssl_directory }}:/etc/secrets
+    labels:
+      - "traefik.http.routers.portainer-http.entrypoints={{ traefik_http_name }}"
+      - "traefik.http.routers.portainer-http.rule=Host(`{{ portainer_name }}-{{ ansible_facts.fqdn }}`)"
+      - "traefik.http.routers.portainer-http.middlewares=redirect-to-https@file"
+      - "traefik.http.routers.portainer-https.rule=Host(`{{ portainer_name }}-{{ ansible_facts.fqdn }}`)"
+      - "traefik.http.routers.portainer-https.entrypoints={{ traefik_https_name }}"
+      - "traefik.http.services.portainer-https.loadBalancer.server.port={{ portainer_port_ui }}"
+
+networks:
+  {{ traefik_network_name }}:
+    external: true
