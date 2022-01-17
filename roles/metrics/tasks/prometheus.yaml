@@ -16,7 +16,7 @@
 - name: Download node_exporter
   get_url:
     url: "{{ node_exporter_url }}.tar.gz"
-    dest: "/tmp/{{ node_exporter_filename }}"
+    dest: "/tmp/{{ node_exporter_filename }}.tar.gz"
     mode: '0755'
 
 - name: Unzip node_exporter
