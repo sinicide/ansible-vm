@@ -9,6 +9,8 @@ common_packages:
   - netcat
   - dnsutils
   - stow
+  - tree
+  - htop
 
 common_vm_packages:
   - qemu-guest-agent
