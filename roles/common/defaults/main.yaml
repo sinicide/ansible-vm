@@ -11,6 +11,7 @@ common_packages:
   - stow
   - tree
   - htop
+  - jq
 
 common_vm_packages:
   - qemu-guest-agent
@@ -21,3 +22,5 @@ debian_packages:
   - nfs-common
 
 os_timezone: "America/Chicago"
+
+ssl_directory: "/etc/ssl"
