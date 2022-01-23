@@ -1,0 +1,20 @@
+---
+# verify we can actually create a ramdisk based on total ram
+- name: Determine if we can Create Ramdisk
+  debug:
+    msg: "Not enought ram, Total = {{ ansible_facts.memory_mb.real.total }} vs Requested = {{ plex_ramdisk_size | int * 1000 }}"
+  when: "(ansible_facts.memory_mb.real.total - plex_min_ram | int) < plex_ramdisk_size | int * 1000"
+
+- name: Create Transcode Directory
+  file:
+    path: "{{ plex_transcode_path }}"
+    state: directory
+
+- name: Configure Ramdisk Mount
+  ansible.posix.mount:
+    src: "tmpfs"
+    path: "{{ plex_transcode_path }}"
+    backup: yes
+    fstype: tmpfs
+    state: mounted
+    opts: "rw,size={{ plex_ramdisk_size }}G"
