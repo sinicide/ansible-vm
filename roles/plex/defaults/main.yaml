@@ -1,0 +1,15 @@
+plex_apt_key: "https://downloads.plex.tv/plex-keys/PlexSign.key"
+plex_apt_repo: "deb https://downloads.plex.tv/repo/deb public main"
+plex_hostname: "{{ ansible_facts.fqdn }}"
+plex_default_port: "32400"
+plex_fullchain_pem: "/etc/ssl/certs/tls.crt"
+plex_private_key_pem: "/etc/ssl/private/tls.key"
+plex_proxy_install: true
+plex_storage_mount_hostname: "{{ plex_storage_hostname | regex_search('^[a-zA-Z0-9-]+') | lower }}"
+plex_grep: "allowedNetworks=\"{{ network\""
+plex_allowed_networks: ''
+plex_combined_allowed_networks: "{{ ansible_facts.default_ipv4.network | regex_replace('(.*?).0$', '\\1.1/24') | createAllowedNetworks(plex_allowed_networks) }}"
+plex_preferences_xml: "/var/lib/plexmediaserver/Library/Application Support/Plex Media Server/Preferences.xml"
+plex_ramdisk: false
+plex_min_ram: '2000'
+plex_transcode_path: "/transcode"
