@@ -19,6 +19,7 @@
   tasks:
     - import_role:
         name: container_runtime
+      when: plex_install != true
 
 - name: Install Portainer
   tags: portainer
@@ -26,3 +27,12 @@
   tasks:
     - import_role:
         name: portainer
+      when: plex_install != true
+
+- name: Install Plex
+  tags: plex
+  hosts: vm
+  tasks:
+    - import_role:
+        name: plex
+      when: plex_install == true
