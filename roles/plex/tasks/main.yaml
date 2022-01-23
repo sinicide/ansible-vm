@@ -1,0 +1,85 @@
+---
+- name: Add apt key for Plex
+  apt_key:
+    url: "{{ plex_apt_key }}"
+    state: present
+  when: ansible_facts.os_family == "Debian"
+
+- name: Add Plex Repo
+  apt_repository:
+    state: present
+    repo: "{{ plex_apt_repo }}"
+  when: ansible_facts.os_family == "Debian"
+
+- name: Install Plex
+  apt:
+    name: plexmediaserver
+    state: present
+    update_cache: yes
+  when: ansible_facts.os_family == "Debian"
+
+- name: Stopping Plex
+  systemd:
+    name: plexmediaserver
+    state: stopped
+
+- name: Checking for allowedNetworks
+  shell:
+    cmd: 'grep -ic allowedNetworks=\"{{ plex_combined_allowed_networks }}\" "{{ plex_preferences_xml }}"'
+  register: checked_allowed_networks
+  failed_when: checked_allowed_networks.stdout == ''
+  changed_when: false
+
+- name: Adding allowedNetworks
+  replace:
+    path: "{{ plex_preferences_xml }}"
+    regexp: '(/>)$'
+    replace: ' allowedNetworks="{{ plex_combined_allowed_networks }}"\1'
+  when: checked_allowed_networks.stdout == '0'
+
+- name: Enable and start Plex
+  systemd:
+    name: plexmediaserver
+    state: started
+    enabled: yes
+
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+  when: plex_proxy_install == true
+
+- name: Copying Plex nginx config
+  template:
+    src: "../templates/nginx.conf.j2"
+    dest: "/etc/nginx/sites-available/{{ plex_hostname }}"
+    owner: root
+    group: root
+    mode: '0644'
+  when: plex_proxy_install == true
+
+- name: Create the Plex config symlink
+  file:
+    state: link
+    src: "/etc/nginx/sites-available/{{ plex_hostname }}"
+    dest: "/etc/nginx/sites-enabled/{{ plex_hostname }}"
+  when: plex_proxy_install == true
+
+- name: Remove Nginx default config
+  file:
+    state: absent
+    dest: "/etc/nginx/sites-enabled/default"
+  when: plex_proxy_install == true
+
+- name: Start Nginx
+  systemd:
+    name: nginx
+    state: restarted
+    enabled: yes
+  when: plex_proxy_install == true
+
+- import_tasks: nfs_storage.yaml
+  when: plex_storage == true
+
+- import_tasks: create_ramdisk.yaml
+  when: plex_ramdisk == true
