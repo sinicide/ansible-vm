@@ -24,6 +24,28 @@ all:
     # Uncomment to change metrics collector from default, prometheus
     # metrics_collector: "prometheus"
 
+    # Plex
+    # Uncomment to deploy Plex (default = false), NOTE will not deploy Docker/Portainer/Traefik
+    # plex_install: true
+    # Uncomment to not install nginx, default is to install Nginx Reverse Proxy
+    # plex_proxy_install: false
+    # Uncomment to configure NFS storage for Plex (this is personalized to my setup), default is false
+    # plex_storage: true
+    # Specifying NFS hostname
+    # plex_storage_hostname: "<nfs_storage_fqdn>"
+    # Specifying list of NFS exports, required if above is specified, please note mount is Read-Only. So no accidental deletes
+    # plex_storage_export_paths:
+    #   - "/mnt/<pool_name>/videos"
+    #   - "/mnt/<pool_name>/audio"
+    # Uncomment to define additional networks allowed as 'local', it'll choose the same network as the host, but you can define additional networks here
+    # plex_allowed_networks:
+    #   - "192.168.3.1/24"
+    #   - "192.168.4.1/24"
+    # Uncomment to configure RAM disk, default = false
+    # plex_ramdisk: true
+    # Specify size in Gigabytes, e.g. "1"
+    # plex_ramdisk_size: "1"
+
 vm:
   hosts:
     <hostname_fqdn>:
