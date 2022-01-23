@@ -1,0 +1,16 @@
+---
+- name: Create Mountable directories
+  file:
+    path: "/mnt/{{ plex_storage_mount_hostname }}/{{ item | regex_search('/mnt/([a-zA-Z0-9]+/[a-zA-Z0-9]+)','\\1') | first | lower }}"
+    state: directory
+  loop: "{{ plex_storage_export_paths }}"
+
+- name: Configure NFS Mounts
+  ansible.posix.mount:
+    src: "{{ plex_storage_hostname }}:{{ item }}"
+    path: "/mnt/{{ plex_storage_mount_hostname }}/{{ item | regex_search('/mnt/([a-zA-Z0-9]+/[a-zA-Z0-9]+)','\\1') | first | lower }}"
+    backup: yes
+    fstype: nfs
+    state: mounted
+    opts: "defaults,intr,tcp,ro"
+  loop: "{{ plex_storage_export_paths }}"
