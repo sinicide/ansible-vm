@@ -21,7 +21,7 @@
     update_cache: yes
     name: "{{ item }}"
   loop: "{{ debian_packages }}"
-  when: ansible_facts.os_family == "debian"
+  when: ansible_facts.os_family == "Debian"
 
 # Set Timezone
 - name: Set Timezone

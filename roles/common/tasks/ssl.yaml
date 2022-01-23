@@ -8,6 +8,26 @@
   when:
     - ansible_facts.os_family == "Debian"
 
+- name: Copy SSL Cert
+  copy:
+    src: "{{ custom_ssl_fullchain_cert }}"
+    dest: "{{ ssl_directory }}/certs/tls.crt"
+    owner: root
+    mode: '0644'
+  become: yes
+  when:
+    - ansible_facts.os_family == "Debian"
+
+- name: Copy SSL Key
+  copy:
+    src: "{{ custom_ssl_key }}"
+    dest: "{{ ssl_directory }}/private/tls.key"
+    owner: root
+    mode: '0640'
+  become: yes
+  when:
+    - ansible_facts.os_family == "Debian"
+
 - name: Applying update
   shell:
     cmd: "update-ca-certificates"
