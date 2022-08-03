@@ -1,0 +1,13 @@
+---
+- name: Add Docker GPG Key
+  rpm_key:
+    key: "{{ docker_rhel_gpg_key }}"
+    state: present
+
+- name: Add Docker Repository
+  get_url:
+    url: "{{ docker_rhel_repo }}"
+    dest: "/etc/yum.repos.d/docker-ce.repo"
+    owner: root
+    group: root
+    mode: '0644'
