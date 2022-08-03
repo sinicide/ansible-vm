@@ -1,0 +1,30 @@
+---
+- name: Get DEB Architecture
+  shell: dpkg --print-architecture
+  register: deb_architecture
+  changed_when: false
+  when:
+    - ansible_facts.os_family == "Debian"
+
+- name: System has Supported Architecture for Docker
+  assert:
+    that: deb_architecture.stdout in item
+    fail_msg: "System Architecture doesn't support Docker, System Arch: {{ ansible_facts.architecture }}"
+  with_items: 
+    - "{{ docker_supported_arch | string }}"
+  when:
+    - ansible_facts.os_family == "Debian"
+
+- name: Add Docker apt key
+  apt_key:
+    url: "{{ docker_debian_gpg_key }}"
+    state: present
+  when:
+    - ansible_facts.os_family == "Debian"
+
+- name: Add repository
+  apt_repository:
+    repo: "deb [arch={{ deb_architecture.stdout }}] {{ docker_debian_repo }}/{{ ansible_facts.distribution | lower }} {{ ansible_facts.distribution_release }} stable"
+    state: present
+  when:
+    - ansible_facts.os_family == "Debian"
