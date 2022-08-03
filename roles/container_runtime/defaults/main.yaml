@@ -1,6 +1,7 @@
 container_runtime: docker
 
-docker_gpg_key: "https://download.docker.com/linux/ubuntu/gpg"
+docker_debian_gpg_key: "https://download.docker.com/linux/ubuntu/gpg"
+docker_rhel_gpg_key: "https://download.docker.com/linux/centos/gpg"
 docker_supported_arch:
   - x86_64
   - amd64
@@ -8,7 +9,8 @@ docker_supported_arch:
   - arm64
   - s390x
 
-docker_repo: "https://download.docker.com/linux"
+docker_debian_repo: "https://download.docker.com/linux"
+docker_rhel_repo: "https://download.docker.com/linux/centos/docker-ce.repo"
 
 docker_packages:
   - docker-ce
