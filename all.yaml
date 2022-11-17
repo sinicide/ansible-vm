@@ -19,7 +19,7 @@
   tasks:
     - import_role:
         name: container_runtime
-      when: plex_install != true
+      when: plex_install != true 
 
 - name: Install Portainer
   tags: portainer
