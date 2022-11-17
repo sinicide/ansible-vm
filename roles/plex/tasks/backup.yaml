@@ -1,0 +1,20 @@
+---
+- name: Copying PMS backup script to host
+  copy:
+    src: ../files/pms-backup.sh
+    dest: "{{ backup_bin_path }}"
+    owner: root
+    group: root
+    mode: 0774
+
+- name: Configure crontab for PMS backup script
+  cron:
+    name: "PMS Backup"
+    month: "*"
+    weekday: "*"
+    day: "*"
+    hour: "3"
+    minute: "0"
+    user: "root"
+    job: "{{ backup_cronjob }}"
+  when: plex_configure_backup == true
