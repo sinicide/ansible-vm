@@ -18,3 +18,23 @@
     user: "root"
     job: "{{ backup_cronjob }}"
   when: plex_configure_backup == true
+
+- name: Copying PMS backup cleanup script to host
+  copy:
+    src: ../files/pms-backup-cleanup.sh
+    dest: "{{ backup_cleanup_bin_path }}"
+    owner: root
+    group: root
+    mode: 0774
+
+- name: Configure crontab for PMS backup cleanup script
+  cron:
+    name: "PMS Backup Cleanup"
+    month: "*"
+    weekday: "*"
+    day: "*"
+    hour: "5"
+    minute: "0"
+    user: "root"
+    job: "{{ backup_cleanup_cronjob }}"
+  when: plex_configure_backup == true

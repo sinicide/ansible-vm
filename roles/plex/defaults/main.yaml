@@ -16,4 +16,6 @@ plex_min_ram: '2000'
 plex_transcode_path: "/transcode"
 plex_configure_backup: false
 backup_bin_path: "/usr/bin/pms-backup.sh"
+backup_cleanup_bin_path: "/usr/bin/pms-backup-cleanup.sh"
 backup_cronjob: "{{ 'BACKUP_LOC=\"' + plex_backup_location + '\" ' if (plex_backup_location) }}{{ 'GOTIFY_TOKEN=' + plex_backup_gotify_token + ' ' if (plex_backup_gotify_token) }}{{ 'GOTIFY_SERVER=\"' + plex_backup_gotify_server + '\" ' if (plex_backup_gotify_server) }}{{ backup_bin_path }}"
+backup_cleanup_cronjob: "{{ 'BACKUP_LOC=\"' + plex_backup_location + '\" ' if (plex_backup_location) }}{{ 'GOTIFY_TOKEN=' + plex_backup_gotify_token + ' ' if (plex_backup_gotify_token) }}{{ 'GOTIFY_SERVER=\"' + plex_backup_gotify_server + '\" ' if (plex_backup_gotify_server) }}{{ backup_cleanup_bin_path }}"
