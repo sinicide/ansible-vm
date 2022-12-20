@@ -96,8 +96,13 @@ for i in "${PMS_LIST[@]}"; do
     #tar -czvf "$FILENAME" "$i"
     # comment out if using the verbose flag above
     tar -czf "$FILENAME" "$i"
-    # mv files to backup mount
-    mv "$FILENAME" "$BACKUP_LOC/"
+    
+    if [ -D "$BACKUP_LOC" ]; then
+        mv "$FILENAME" "$BACKUP_LOC/"
+    else
+        sendMsg "Issue with Mount Location ${BACKUP_LOC}, skipping moving ${FILENAME}" "3"
+    fi
+    
 done
 
 popd
