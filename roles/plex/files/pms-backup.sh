@@ -97,7 +97,7 @@ for i in "${PMS_LIST[@]}"; do
     # comment out if using the verbose flag above
     tar -czf "$FILENAME" "$i"
     
-    if [ -D "$BACKUP_LOC" ]; then
+    if [ -d "$BACKUP_LOC" ]; then
         mv "$FILENAME" "$BACKUP_LOC/"
     else
         sendMsg "Issue with Mount Location ${BACKUP_LOC}, skipping moving ${FILENAME}" "3"
