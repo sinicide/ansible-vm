@@ -29,5 +29,8 @@
 # importing traefik task
 - import_tasks: traefik.yaml
 
+# importing watchtower task
+- import_tasks: watchtower.yaml
+
 # importing portainer task
 - import_tasks: portainer.yaml

@@ -1,0 +1,25 @@
+version: '3'
+services:
+  traefik:
+    image: containrrr/watchtower:latest
+    container_name: {{ watchtower_name }}
+    ports:
+      - {{ watchtower_port_metrics }}:{{ watchtower_port_metrics }}
+    restart: unless-stopped
+    networks:
+      - {{ traefik_network_name }}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      WATCHTOWER_CLEANUP: "{{ watchtower_cleanup }}"
+      WATCHTOWER_HTTP_API_METRICS: "{{ watchtower_metrics_enabled }}"
+      WATCHTOWER_ROLLING_RESTART: "{{ watchtower_rolling_restart }}"
+      WATCHTOWER_TIMEOUT: "{{ watchtower_timeout }}"
+      WATCHTOWER_NO_STARTUP_MESSAGE: "{{ watchtower_no_startup_message }}"
+      WATCHTOWER_NOTIFICATIONS_LEVEL: "{{ watchtower_notifications_level }}"
+      WATCHTOWER_NOTIFICATIONS_HOSTNAME: "{{ watchtower_hostname }}"
+      WATCHTOWER_NOTIFICATION_URL: "{{ watchtower_notification_urls }}"
+
+networks:
+  {{ traefik_network_name }}:
+    external: true

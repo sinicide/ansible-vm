@@ -1,0 +1,34 @@
+---
+- name: Create directory {{ watchtower_directory }}
+  file:
+    path: "{{ watchtower_directory }}"
+    owner: root
+    state: directory
+
+- name: Checking if {{ watchtower_name }} is running
+  shell:
+    cmd: "docker compose ls"
+  become: true
+  register: watchtower_status
+  changed_when: false
+
+- name: Stopping {{ watchtower_name }}
+  become: true
+  shell:
+    cmd: "docker compose -f {{ watchtower_compose_path }} down"
+  changed_when: false
+  when:
+    - '"watchtower" in watchtower_status.stdout'
+
+- name: Copy watchtower-compose.yaml file
+  template:
+    src: "../templates/watchtower/watchtower-compose.yaml.j2"
+    dest: "{{ watchtower_compose_path }}"
+    owner: root
+    mode: '0644'
+
+- name: Starting {{ watchtower_name }}
+  shell:
+    cmd: "docker compose -f {{ watchtower_compose_path }} up -d"
+  become: true
+  changed_when: false
