@@ -19,6 +19,8 @@ all:
     # Uncomment to override default admin username and password
     # portainer_admin_username: "admin"
     # portainer_admin_password: "pleasechangeme"
+    # watchtower notification url, space separated for multiple services. https://containrrr.dev/shoutrrr/v0.8/services/overview/
+    # watchtower_notification_urls: "gotify://gotify-host/token"
 
     # Metrics
     # Uncomment to change metrics collector from default, prometheus
