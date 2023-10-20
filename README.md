@@ -25,3 +25,6 @@ You can use tags to only run some of the roles.
 ```
 ansible-playbook -i hosts.yaml all.yaml --tags=portainer
 ```
+
+## Accessing Prometheus Metrics
+With Node Exporter configured, metrics are accessible at `http://<vm-hostname>:9100/metrics`
