@@ -19,6 +19,7 @@ services:
       WATCHTOWER_NOTIFICATIONS_LEVEL: "{{ watchtower_notifications_level }}"
       WATCHTOWER_NOTIFICATIONS_HOSTNAME: "{{ watchtower_hostname }}"
       WATCHTOWER_NOTIFICATION_URL: "{{ watchtower_notification_urls }}"
+      WATCHTOWER_HTTP_API_TOKEN: "{{ watchtower_http_api_token }}"
 
 networks:
   {{ traefik_network_name }}:
