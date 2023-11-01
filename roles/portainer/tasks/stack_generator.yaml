@@ -1,0 +1,65 @@
+---
+- name: Create directory for stacks compose files
+  file:
+    path: "{{ portainer_stacks_path }}"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+    state: "directory"
+
+- name: Generate Unifi-Controller docker-compose file
+  template:
+    src: "../templates/stacks/unifi-controller.yaml.j2"
+    dest: "{{ portainer_stacks_path }}/{{ unifi_controller_name }}-compose.yaml"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  when: "unifi_controller_enabled == true"
+
+- name: Generate Homepage docker-compose file
+  template:
+    src: "../templates/stacks/homepage.yaml.j2"
+    dest: "{{ portainer_stacks_path }}/{{ homepage_name }}-compose.yaml"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  when: "homepage_enabled == true"
+
+- name: Generate Nextcloud docker-compose file
+  template:
+    src: "../templates/stacks/nextcloud.yaml.j2"
+    dest: "{{ portainer_stacks_path }}/{{ nextcloud_name }}-compose.yaml"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  when: "nextcloud_enabled == true"
+
+- name: Generate Uptime-Kuma docker-compose file
+  template:
+    src: "../templates/stacks/uptime-kuma.yaml.j2"
+    dest: "{{ portainer_stacks_path }}/{{ uptime_kuma_name }}-compose.yaml"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  when: "uptime_kuma_enabled == true"
+
+- name: Generate Prometheus docker-compose file
+  template:
+    src: "../templates/stacks/prometheus.yaml.j2"
+    dest: "{{ portainer_stacks_path }}/{{ prometheus_name }}-compose.yaml"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  when: "prometheus_enabled == true"
+
+- name: Generate Grafana docker-compose file
+  template:
+    src: "../templates/stacks/grafana.yaml.j2"
+    dest: "{{ portainer_stacks_path }}/{{ grafana_name }}-compose.yaml"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  when: "grafana_enabled == true"
+
+- debug:
+    msg: "Please note that these need to be manually deployed in Portainer"
