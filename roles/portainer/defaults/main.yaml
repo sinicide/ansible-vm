@@ -3,6 +3,7 @@ container_ssl_directory: "{{ container_directory }}/ssl"
 
 traefik_name: "traefik"
 traefik_version: "latest"
+traefik_fqdn: "{{ traefik_name }}-{{ ansible_facts.fqdn }}"
 traefik_directory: "{{ container_directory }}/{{ traefik_name }}"
 traefik_compose_path: "{{ traefik_directory }}/traefik-compose.yaml"
 traefik_http_name: "web"
@@ -45,3 +46,14 @@ watchtower_no_startup_message: "true"
 watchtower_notifications_level: "error"
 watchtower_notification_urls: "{{ watchtower_notification_urls | default('') }}"
 watchtower_http_api_token: "watchTowerToken"
+
+# Portainer Stacks
+portainer_stacks_path: "{{ container_directory }}/stacks"
+
+unifi_controller_enabled: "{{ portainer_stacks.unifi_controller.enabled |  default('false') }}"
+unifi_controller_name: "unifi-controller"
+unifi_controller_image_name: "linuxserver/unifi-controller"
+unifi_controller_image_version: "7.5.187"
+unifi_controller_fqdn: "{{ portainer_stacks.unifi_controller.hostname | default(unifi_controller_name) }}"
+unifi_controller_ui_port: "8443"
+unifi_controller_volume_path: "{{ container_directory }}/{{ unifi_controller_name }}/data"
