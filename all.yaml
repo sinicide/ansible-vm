@@ -19,7 +19,7 @@
   tasks:
     - import_role:
         name: container_runtime
-      when: plex_install != true 
+      when: "plex_install is not defined || plex_install != true"
 
 - name: Install Portainer
   tags: portainer
@@ -27,7 +27,7 @@
   tasks:
     - import_role:
         name: portainer
-      when: plex_install != true
+      when: "plex_install is not defined || plex_install != true"
 
 - name: Generate Portainer Stacks
   tags: portainer,stacks
@@ -46,4 +46,6 @@
   tasks:
     - import_role:
         name: plex
-      when: plex_install == true
+      when:
+        - plex_install is defined 
+        - plex_install == true
