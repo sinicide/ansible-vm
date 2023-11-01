@@ -63,12 +63,30 @@
 
 - name: Generate Prometheus Exporters docker-compose file
   template:
-    src: "../templates/stacks/prom-exportes.yaml.j2"
+    src: "../templates/stacks/prom-exporters.yaml.j2"
     dest: "{{ portainer_stacks_path }}/prom-exporters-compose.yaml"
     owner: "root"
     group: "root"
     mode: "0755"
   when: "prom_exporters_enabled == true"
+
+- name: Generate Minio docker-compose file
+  template:
+    src: "../templates/stacks/minio.yaml.j2"
+    dest: "{{ portainer_stacks_path }}/{{ minio_name }}-compose.yaml"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  when: "minio_enabled == true"
+
+- name: Generate Pihole docker-compose file
+  template:
+    src: "../templates/stacks/pihole.yaml.j2"
+    dest: "{{ portainer_stacks_path }}/{{ pihole_name }}-compose.yaml"
+    owner: "root"
+    group: "root"
+    mode: "0755"
+  when: "pihole_enabled == true"
 
 - debug:
     msg: "Please note that these need to be manually deployed in Portainer"
