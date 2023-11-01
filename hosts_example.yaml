@@ -30,6 +30,15 @@ all:
     #   nextcloud:
     #     enabled: true
     #     domain: "example.com"
+    #   prometheus:
+    #     enabled: true
+    #   grafana:
+    #     enabled: true
+    #   prom_exporters:
+    #     nut_exporter:
+    #       enabled: true
+    #     proxmox_exporter:
+    #       enabled: true
 
     # Metrics
     # Uncomment to change metrics collector from default, prometheus
