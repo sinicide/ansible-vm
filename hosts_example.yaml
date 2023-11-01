@@ -35,6 +35,7 @@ all:
     #   grafana:
     #     enabled: true
     #   prom_exporters:
+    #     enabled: tue
     #     nut_exporter:
     #       enabled: true
     #     proxmox_exporter:
