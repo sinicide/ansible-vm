@@ -21,6 +21,15 @@ all:
     # portainer_admin_password: "pleasechangeme"
     # watchtower notification url, space separated for multiple services. https://containrrr.dev/shoutrrr/v0.8/services/overview/
     # watchtower_notification_urls: "gotify://gotify-host/token"
+    # Portainer Stacks to be generated
+    # portainer_stacks:
+    #   unifi_controller:
+    #     enabled: true
+    #   homepage:
+    #     enabled: true
+    #   nextcloud:
+    #     enabled: true
+    #     domain: "example.com"
 
     # Metrics
     # Uncomment to change metrics collector from default, prometheus
