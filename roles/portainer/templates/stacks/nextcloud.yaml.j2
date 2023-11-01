@@ -1,0 +1,35 @@
+version: '3'
+services:
+  {{ nextcloud_name }}:
+    image: {{ nextcloud_image_name }}:{{ nextcloud_image_version }}
+    container_name: {{ nextcloud_name }}
+    hostname: {{ nextcloud_fqdn }}
+    networks:
+      - {{ traefik_network_name }}
+    restart: unless-stopped
+    volumes:
+      - "{{ nextcloud_volume_path }}:/var/www/html"
+    environment:
+      NEXTCLOUD_TRUSTED_DOMAINS: "{{ nextcloud_fqdn }} localhost"
+      APACHE_DISABLE_REWRITE_IP: "1"
+      OVERWRITEPROTOCOL: "https"
+    labels:
+      - "traefik.http.routers.{{ nextcloud_name }}-http.entrypoints={{ traefik_http_name }}"
+      - "traefik.http.routers.{{ nextcloud_name }}-http.rule=Host(`{{ nextcloud_fqdn }}`)"
+      - "traefik.http.routers.{{ nextcloud_name }}-https.entrypoints={{ traefik_https_name }}"
+      - "traefik.http.routers.{{ nextcloud_name }}-https.rule=Host(`{{ nextcloud_fqdn }}`)"
+      - "traefik.http.services.{{ nextcloud_name }}-https.loadBalancer.server.port={{ nextcloud_ui_port }}"
+      - "traefik.http.services.{{ nextcloud_name }}-https.loadBalancer.server.scheme=http"
+      - "traefik.http.routers.{{ nextcloud_name }}-https.middlewares={{ nextcloud_name }}-caldav,{{ nextcloud_name }}-headers"
+      - "traefik.http.middlewares.{{ nextcloud_name }}-caldav.redirectRegex.permanent=true"
+      - "traefik.http.middlewares.{{ nextcloud_name }}-caldav.redirectRegex.regex=https://(.*)/.well-known/(card|cal)dav"
+      - "traefik.http.middlewares.{{ nextcloud_name }}-caldav.redirectRegex.replacement=https://$${1}/remote.php/dav/"
+      - "traefik.http.middlewares.{{ nextcloud_name }}-headers.headers.stsSeconds=15552000"
+      - "traefik.http.middlewares.{{ nextcloud_name }}-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.{{ nextcloud_name }}-headers.headers.stsPreload=true"
+      - "traefik.http.middlewares.{{ nextcloud_name }}-headers.headers.forceSTSHeader=true"
+      - "traefik.http.middlewares.{{ nextcloud_name }}-headers.headers.contentSecurityPolicy=frame-ancestors 'self' {{ nextcloud_name }} *.{{ nextcloud_domain }}"
+      - "traefik.http.middlewares.{{ nextcloud_name }}-headers.headers.customFrameOptionsValue=SAMEORIGIN"
+networks:
+  {{ traefik_network_name }}:
+    external: true

@@ -1,0 +1,29 @@
+version: '3'
+services:
+  {{ grafana_name }}:
+    image: {{ grafana_image_name }}:{{ grafana_image_version }}
+    container_name: {{ grafana_name }}
+    hostname: {{ grafana_fqdn }}
+    networks:
+      - {{ traefik_network_name }}
+    restart: unless-stopped
+    volumes:
+      - "{{ grafana_volume_path }}:/var/lib/grafana"
+    environment:
+        GF_SERVER_ROOT_URL: "https://{{ grafana_fqdn }}"
+        GF_SERVER_ENABLE_GZIP: "true"
+        GF_DATABASE_WAL: "true"
+        GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+        GF_ANALYTICS_REPORTING_ENABLED: "false"
+        GF_INSTALL_PLUGINS: "grafana-worldmap-panel,grafana-clock-panel,natel-discrete-panel,grafana-github-datasource,fifemon-graphql-datasource,grafana-kubernetes-app,ntop-ntopng-datasource,redis-datasource,frser-sqlite-datasource,grafana-piechart-panel"
+        GF_SECURITY_DISABLE_GRAVATAR: "true"
+    labels:
+      - "traefik.http.routers.{{ grafana_name }}-http.entrypoints={{ traefik_http_name }}"
+      - "traefik.http.routers.{{ grafana_name }}-http.rule=Host(`{{ grafana_fqdn }}`)"
+      - "traefik.http.routers.{{ grafana_name }}-https.entrypoints={{ traefik_https_name }}"
+      - "traefik.http.routers.{{ grafana_name }}-https.rule=Host(`{{ grafana_fqdn }}`)"
+      - "traefik.http.services.{{ grafana_name }}-https.loadBalancer.server.port={{ grafana_ui_port }}"
+      - "traefik.http.services.{{ grafana_name }}-https.loadBalancer.server.scheme=http"
+networks:
+  {{ traefik_network_name }}:
+    external: true

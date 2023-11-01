@@ -1,0 +1,55 @@
+---
+version: '3'
+services:
+{% if nut_exporter_enabled == true %}
+# nut-exporter
+  {{ nut_exporter_name }}:
+    image: {{ nut_exporter_image_name }}:{{ nut_exporter_image_version }}
+    container_name: {{ nut_exporter_name }}
+    hostname: {{ nut_exporter_fqdn }}
+    networks:
+      - {{ traefik_network_name }}
+    restart: unless-stopped
+    environment:
+        NUT_EXPORTER_VARIABLES: "battery.charge,battery.charge.low,battery.charge.warning,battery.runtime,battery.runetime.low,battery.temperature,battery.voltage,battery.voltage.nominal,input.voltage,input.voltage.nominal,output.voltage,output.voltage.nomial,ups.load,ups.status,ups.beeper.status"
+        NUT_EXPORTER_STATUSES: ""
+        NUT_EXPORTER_METRICS_NAMESPACE: "nut"
+        NUT_EXPORTER_WEB_LISTEN_ADDRESS: ":{{ nut_exporter_ui_port }}"
+        NUT_EXPORTER_WEB_TELEMETRY_PATH: "/ups_metrics"
+        NUT_EXPORTER_WEB_EXPORTER_TELEMETRY_PATH: "/metrics"
+        NUT_EXPORTER_PASSWORD: ${NUT_PASSWORD}
+        NUT_EXPORTER_SERVER: ${NUT_SERVER}
+        NUT_EXPORTER_USERNAME: ${NUT_USERNAME}
+    labels:
+      - "traefik.http.routers.{{ nut_exporter_name }}-http.entrypoints={{ traefik_http_name }}"
+      - "traefik.http.routers.{{ nut_exporter_name }}-http.rule=Host(`{{ nut_exporter_fqdn }}`)"
+      - "traefik.http.routers.{{ nut_exporter_name }}-https.entrypoints={{ traefik_https_name }}"
+      - "traefik.http.routers.{{ nut_exporter_name }}-https.rule=Host(`{{ nut_exporter_fqdn }}`)"
+      - "traefik.http.services.{{ nut_exporter_name }}-https.loadBalancer.server.port={{ nut_exporter_ui_port }}"
+      - "traefik.http.services.{{ nut_exporter_name }}-https.loadBalancer.server.scheme=http"
+{% endif %}
+{% if proxmox_exporter_enabled == true %}
+# proxmox exporter
+  {{ proxmox_exporter_name }}:
+    image: {[ proxmox_exporter_image_name ]}:{{ proxmox_exporter_image_version }}
+    container_name: {{ proxmox_exporter_name }}
+    hostname: {{ proxmox_exporter_fqdn }}
+    networks:
+      - {{ traefik_network_name }}
+    restart: unless-stopped
+    environment:
+        PVE_VERIFY_SSL: false
+        PVE_USER: "${PVE_USER}"
+        PVE_TOKEN_NAME: "${PVE_TOKEN_NAME}"
+        PVE_TOKEN_VALUE: "${PVE_TOKEN_VALUE}"
+    labels:
+      - "traefik.http.routers.{{ proxmox_exporter_name }}-http.entrypoints={{ traefik_http_name }}"
+      - "traefik.http.routers.{{ proxmox_exporter_name }}-http.rule=Host(`{{ proxmox_exporter_fqdn }}`)"
+      - "traefik.http.routers.{{ proxmox_exporter_name }}-https.entrypoints={{ traefik_https_name }}"
+      - "traefik.http.routers.{{ proxmox_exporter_name }}-https.rule=Host(`{{ proxmox_exorter_fqdn }}`)"
+      - "traefik.http.services.{{ proxmox_exporter_name }}-https.loadBalancer.server.port={{ proxmox_exporter_ui_port }}"
+      - "traefik.http.services.{{ proxmox_exporter_name }}-https.loadBalancer.server.scheme=http"
+{% endif %}
+networks:
+  {{ traefik_network_name }}:
+    external: true

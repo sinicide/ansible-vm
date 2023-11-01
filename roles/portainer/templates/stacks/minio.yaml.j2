@@ -1,0 +1,29 @@
+version: '3'
+services:
+  {{ minio_name }}:
+    image: {{ minio_image_name }}:{{ minio_image_version }}
+    container_name: {{ minio_name }}
+    hostname: {{ minio_fqdn }}
+    networks:
+      - {{ traefik_network_name }}
+    restart: unless-stopped
+    ports:
+        - "{{ minio_address_port }}:{{ minio_address_port }}"
+    volumes:
+      - "{{ minio_volume_path }}:/data"
+    command: server --address ":{{ minio_address_port }}" --console-address ":{{ minio_console_port }}" /data
+    environment:
+        MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+        MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+        MINIO_SERVER_URL: "https://{{ minio_fqdn }}:{{ minio_address_port }}"
+        MINIO_BROWSER_REDIRECT_URL: "https://{{ minio_fqdn }}"
+    labels:
+      - "traefik.http.routers.{{ minio_name }}-http.entrypoints={{ traefik_http_name }}"
+      - "traefik.http.routers.{{ minio_name }}-http.rule=Host(`{{ minio_fqdn }}`)"
+      - "traefik.http.routers.{{ minio_name }}-https.entrypoints={{ traefik_https_name }}"
+      - "traefik.http.routers.{{ minio_name }}-https.rule=Host(`{{ minio_fqdn }}`)"
+      - "traefik.http.services.{{ minio_name }}-https.loadBalancer.server.port={{ minio_console_port }}"
+      - "traefik.http.services.{{ minio_name }}-https.loadBalancer.server.scheme=http"
+networks:
+  {{ traefik_network_name }}:
+    external: true

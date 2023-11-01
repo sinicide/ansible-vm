@@ -1,0 +1,23 @@
+version: '3'
+services:
+  {{ uptime_kuma_name }}:
+    image: {{ uptime_kuma_image_name }}:{{ uptime_kuma_image_version }}
+    container_name: {{ uptime_kuma_name }}
+    hostname: {{ uptime_kuma_fqdn }}
+    networks:
+      - {{ traefik_network_name }}
+    restart: unless-stopped
+    volumes:
+      - "{{ uptime_kuma_volume_path }}:/app/data"
+    environment:
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
+    labels:
+      - "traefik.http.routers.{{ uptime_kuma_name }}-http.entrypoints={{ traefik_http_name }}
+      - "traefik.http.routers.{{ uptime_kuma_name }}-http.rule=Host(`{{ uptime_kuma_fqdn }}`)"
+      - "traefik.http.routers.{{ uptime_kuma_name }}-https.entrypoints={{ traefik_https_name }}"
+      - "traefik.http.routers.{{ uptime_kuma_name }}-https.rule=Host(`{{ uptime_kuma_fqdn }}`)"
+      - "traefik.http.services.{{ uptime_kuma_name }}-https.loadBalancer.server.port={{ uptime_kuma_ui_port }}"
+      - "traefik.http.services.{{ uptime_kuma_name }}-https.loadBalancer.server.scheme=http"
+networks:
+  {{ traefik_network_name }}:
+    external: true

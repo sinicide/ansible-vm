@@ -1,0 +1,37 @@
+version: '3'
+services:
+  {{ unifi_controller_name }}:
+    image: {{ unifi_controller_image_name }}:{{ unifi_controller_image_version }}
+    container_name: {{ unifi_controller_name }}
+    hostname: {{ unifi_controller_fqdn }}
+    networks:
+      - {{ traefik_network_name }}
+    ports:
+      # Unifi STUN port
+      - 3478:3478/udp
+      # Required for AP Discovery
+      - 10001:10001/udp
+      # Required for controller to be discoverable on L2 Network
+      - 1900:1900/udp
+      # Required for device communication
+      - 8080:8080
+      # Remote syslog capture
+      - 5514:5514/udp
+    restart: unless-stopped
+    volumes:
+      - "{{ unifi_controller_volume_path }}:/config"
+    labels:
+      - "traefik.http.routers.{{ unifi_controller_name }}-http.entrypoints={{ traefik_http_name }}"
+      - "traefik.http.routers.{{ unifi_controller_name }}-http.middlewares=redirect-to-https@file"
+      - "traefik.http.routers.{{ unifi_controller_name }}-http.rule=Host(`{{ unifi_controller_fqdn }}`)"
+      - "traefik.http.routers.{{ unifi_controller_name }}-https.entrypoints={{ traefik_https_name }}"
+      - "traefik.http.routers.{{ unifi_controller_name }}-https.rule=Host(`{{ unifi_controller_fqdn }}`)"
+      - "traefik.http.services.{{ unifi_controller_name }}-https.loadBalancer.server.port={{ unifi_controller_ui_port }}"
+      - "traefik.http.services.{{ unifi_controller_name }}-https.loadBalancer.server.scheme=https"
+      - "traefik.http.routers.{{ unifi_controller_name }}-https.middlewares={{ unifi_controller_name }}-headers"
+      - "traefik.http.middlewares.{{ unifi_controller_name }}-headers.headers.customRequestHeaders.Authorization="
+      - "traefik.http.middlewares.{{ unifi_controller_name }}-headers.headers.customRequestHeaders.X-Forwarded-Proto=https"
+      - "traefik.http.serverstransports.{{ unifi_controller_name }}-st.insecureSkipVerify=true"
+networks:
+  {{ traefik_network_name }}:
+    external: true

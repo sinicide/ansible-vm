@@ -1,0 +1,27 @@
+version: '3'
+services:
+  {{ pihole_name }}:
+    image: {{ pihole_image_name }}:{{ pihole_image_version }}
+    container_name: {{ pihole_name }}
+    hostname: {{ pihole_fqdn }}
+    networks:
+      - {{ traefik_network_name }}
+    restart: unless-stopped
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    volumes:
+      - "{{ pihole_volume_path }}:/etc/pihole"
+      - "{{ pihole_volume_dnsmasq_path }}:/etc/dnsmasq.d"
+    environment:
+        WEBPASSWORD: ${PIHOLE_WEBPASSWORD}
+    labels:
+      - "traefik.http.routers.{{ pihole_name }}-http.entrypoints={{ traefik_http_name }}"
+      - "traefik.http.routers.{{ pihole_name }}-http.rule=Host(`{{ pihole_fqdn }}`)"
+      - "traefik.http.routers.{{ pihole_name }}-https.entrypoints={{ traefik_https_name }}"
+      - "traefik.http.routers.{{ pihole_name }}-https.rule=Host(`{{ pihole_fqdn }}`)"
+      - "traefik.http.services.{{ pihole_name }}-https.loadBalancer.server.port={{ pihole_ui_port }}"
+      - "traefik.http.services.{{ pihole_name }}-https.loadBalancer.server.scheme=http"
+networks:
+  {{ traefik_network_name }}:
+    external: true
