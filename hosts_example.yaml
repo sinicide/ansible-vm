@@ -40,6 +40,10 @@ all:
     #       enabled: true
     #     proxmox_exporter:
     #       enabled: true
+    #   minio:
+    #     enabled: true
+    #   pihole:
+    #     enabled: true
 
     # Metrics
     # Uncomment to change metrics collector from default, prometheus
