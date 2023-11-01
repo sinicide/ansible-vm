@@ -29,6 +29,17 @@
         name: portainer
       when: plex_install != true
 
+- name: Generate Portainer Stacks
+  tags: portainer,stacks
+  hosts: vm
+  tasks:
+    - import_role:
+        name: portainer
+        tasks_from: stack_generator.yaml
+      when:
+        - portainer_stacks is defined
+        - "plex_install is not defined || plex_install != true"
+
 - name: Install Plex
   tags: plex
   hosts: vm
