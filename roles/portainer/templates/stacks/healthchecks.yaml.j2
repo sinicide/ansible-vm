@@ -1,0 +1,27 @@
+version: '3'
+services:
+  {{ healthchecks_name }}:
+    image: {{ healthchecks_image_name }}:{{ healthchecks_image_version }}
+    container_name: {{ healthchecks_name }}
+    hostname: {{ healthchecks_fqdn }}
+    networks:
+      - {{ traefik_network_name }}
+    restart: unless-stopped
+    volumes:
+      - "{{ healthchecks_volume_path }}:/config"
+    environment:
+      TZ: "America/Chicago"
+      REGENERATE_SETTINGS: "true"
+      DEBUG: "false"
+      INTEGRATIONS_ALLOW_PRIVATE_IPS: "true"
+      SECRET_KEY: ${HC_SECRERT_KEY}
+    labels:
+      - "traefik.http.routers.{{ healthchecks_name }}-http.entrypoints={{ traefik_http_name }}"
+      - "traefik.http.routers.{{ healthchecks_name }}-http.rule=Host(`{{ healthchecks_fqdn }}`)"
+      - "traefik.http.routers.{{ healthchecks_name }}-https.entrypoints={{ traefik_https_name }}"
+      - "traefik.http.routers.{{ healthchecks_name }}-https.rule=Host(`{{ healthchecks_fqdn }}`)"
+      - "traefik.http.services.{{ healthchecks_name }}-https.loadBalancer.server.port={{ healthchecks_ui_port }}"
+      - "traefik.http.services.{{ healthchecks_name }}-https.loadBalancer.server.scheme=http"
+networks:
+  {{ traefik_network_name }}:
+    external: true
