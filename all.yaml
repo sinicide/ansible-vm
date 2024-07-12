@@ -1,4 +1,4 @@
----    
+---
 - name: Perform Initialization
   tags: common
   hosts: vm
@@ -19,7 +19,7 @@
   tasks:
     - import_role:
         name: container_runtime
-      when: "plex_install is not defined || plex_install != true"
+      when: plex_install is not defined or plex_install != true
 
 - name: Install Portainer
   tags: portainer
@@ -27,7 +27,7 @@
   tasks:
     - import_role:
         name: portainer
-      when: "plex_install is not defined || plex_install != true"
+      when: plex_install is not defined or plex_install != true
 
 - name: Generate Portainer Stacks
   tags: portainer,stacks
@@ -38,7 +38,7 @@
         tasks_from: stack_generator.yaml
       when:
         - portainer_stacks is defined
-        - "plex_install is not defined || plex_install != true"
+        - plex_install is not defined or plex_install != true
 
 - name: Install Plex
   tags: plex
@@ -47,5 +47,5 @@
     - import_role:
         name: plex
       when:
-        - plex_install is defined 
+        - plex_install is defined
         - plex_install == true
